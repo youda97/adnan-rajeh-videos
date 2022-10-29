@@ -1,0 +1,28 @@
+.container {
+    background-color: #282c34;
+    font-size: calc(10px + 2vmin);
+    color: #ffff;
+
+    .youtube-overlay {
+        position: relative;
+        overflow: hidden;
+        width: 100vw;
+        height: calc(100vh - 70px);
+    }
+
+    .recent-videos__title {
+        text-align: center;
+    }
+
+    .recent-videos__content {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .recent-video {
+            width: 325px;
+            height: 185px;
+            padding: 10px;
+        }
+    }
+}
