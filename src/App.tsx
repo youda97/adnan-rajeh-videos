@@ -13,7 +13,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Header />}>
                     <Route index element={<Youtube />} />
-                    <Route path="topics" element={<Topic />} />
+                    <Route path="topics/:id" element={<Topic />} />
                     {/* <Route path="/livestream" element={< />} />
                         <Route path="/settings" element={< />} />
                         <Route path="/help" element={< />} /> */}

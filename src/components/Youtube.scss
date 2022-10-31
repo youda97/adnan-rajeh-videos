@@ -1,13 +1,14 @@
 .container {
-    background-color: #282c34;
+    margin-top: 60px;
     font-size: calc(10px + 2vmin);
+    background-color: #282c34;
     color: #ffff;
 
     .youtube-overlay {
         position: relative;
         overflow: hidden;
         width: 100vw;
-        height: calc(100vh - 70px);
+        height: calc(100vh - 8.5rem);
     }
 
     .recent-videos__title {
