@@ -30,7 +30,7 @@ export const Youtube = ({}: Props) => {
                                     "https://www.youtube.com/embed/" +
                                     recentVideo.recentVideos.items[0].id
                                         .videoId +
-                                    "?autoplay=1&mute=1&rel=0&controls=0&modestbranding=1&autohide=1&showinfo=0"
+                                    "?autoplay=1&mute=0&rel=0&modestbranding=1&autohide=1&showinfo=0"
                                 }
                                 title={
                                     recentVideo.recentVideos.items[0].snippet
