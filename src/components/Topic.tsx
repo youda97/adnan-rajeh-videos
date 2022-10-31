@@ -4,6 +4,7 @@ import { fetchPlaylistItems } from "../redux/features/playlistItemSlice";
 import { fetchPlaylists } from "../redux/features/playlistSlice";
 import { fetchVideo } from "../redux/features/videoSlice";
 import { useLocation } from "react-router-dom";
+import { Eye, ThumbsUp } from "react-feather";
 
 interface Props {}
 
@@ -83,10 +84,8 @@ export const Topic = ({}: Props) => {
             itemWidth = 0.25;
         } else if (windowWidth > 500 && windowWidth < 799) {
             itemWidth = 0.3333;
-        } else if (windowWidth > 415 && windowWidth < 499) {
+        } else if (windowWidth < 499) {
             itemWidth = 0.5;
-        } else if (windowWidth < 414) {
-            itemWidth = 1;
         }
 
         setItemsPerRow(Math.floor(windowWidth / (windowWidth * itemWidth)));
@@ -106,26 +105,55 @@ export const Topic = ({}: Props) => {
     };
 
     const onImageHover = (event: any, item: any, i: any, j: any) => {
-        const width = event.target.offsetWidth;
-        const height = event.target.offsetHeight;
+        const width = event.target.closest("a").offsetWidth;
+        const height = event.target.closest("a").parentElement.offsetHeight;
+        console.log(height);
 
-        const itemStyles = getComputedStyle(event.target);
-        const rowStyles = getComputedStyle(event.target.parentElement);
-
+        const rowStyles = getComputedStyle(
+            event.target.closest("a").parentElement
+        );
+        const itemStyles = getComputedStyle(event.target.closest("a"));
         const paddingLeftRow = parseInt(rowStyles.paddingLeft, 10);
-        const paddingBottomRow = parseInt(rowStyles.paddingBottom, 10);
+        const paddingMarginRow = parseInt(rowStyles.marginBottom, 10);
 
-        const positionTop = i * (height + paddingBottomRow);
-        const positionLeft = j * width + paddingLeftRow;
+        const paddingLeftItem = parseInt(itemStyles.paddingLeft, 10);
+
+        const positionTop = i * (height + paddingMarginRow);
+        const positionLeft = j * width + paddingLeftRow + paddingLeftItem;
 
         delay.current = setTimeout(() => {
             setHoveredItem({ item, positionTop, positionLeft, width, j });
             setIsHovered(true);
-        }, 800);
+        }, 600);
     };
 
     const onLargeImageLeave = () => {
+        // setHoveredItem({});
         setIsHovered(false);
+    };
+
+    const formatDuration = (duration: any) => {
+        var match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+
+        match = match.slice(1).map(function (x: any) {
+            if (x != null) {
+                return x.replace(/\D/, "");
+            }
+        });
+
+        var hours = parseInt(match[0]) || 0;
+        var minutes = parseInt(match[1]) || 0;
+        var seconds = parseInt(match[2]) || 0;
+
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        } else {
+            return `${minutes}m ${seconds}s`;
+        }
+    };
+
+    const onVideoClick = () => {
+        console.log("video click");
     };
 
     return (
@@ -150,21 +178,11 @@ export const Topic = ({}: Props) => {
                                         //     "Private video"
                                         // ) {
                                         return (
-                                            <img
-                                                style={{
-                                                    padding:
-                                                        item &&
-                                                        item.url
-                                                            .split("/")
-                                                            .pop()
-                                                            .replace(
-                                                                /\.[^/.]+$/,
-                                                                ""
-                                                            ) === "mqdefault"
-                                                            ? "21px 0.2vw"
-                                                            : "0 0.2vw",
-                                                }}
+                                            <a
                                                 className="playlist-video"
+                                                key={item && item.id}
+                                                href={void 0}
+                                                onClick={onVideoClick}
                                                 onMouseEnter={(event) =>
                                                     onImageHover(
                                                         event,
@@ -176,9 +194,40 @@ export const Topic = ({}: Props) => {
                                                 onMouseLeave={() =>
                                                     clearTimeout(delay.current)
                                                 }
-                                                key={item && item.id}
-                                                src={item && item.url}
-                                            />
+                                            >
+                                                <img
+                                                    style={{
+                                                        padding:
+                                                            item &&
+                                                            item.url
+                                                                .split("/")
+                                                                .pop()
+                                                                .replace(
+                                                                    /\.[^/.]+$/,
+                                                                    ""
+                                                                ) ===
+                                                                "mqdefault"
+                                                                ? "21px 0.2vw"
+                                                                : "0 0.2vw",
+                                                    }}
+                                                    // className="playlist-video"
+                                                    // onMouseEnter={(event) =>
+                                                    //     onImageHover(
+                                                    //         event,
+                                                    //         item,
+                                                    //         i,
+                                                    //         j
+                                                    //     )
+                                                    // }
+                                                    // onMouseLeave={() =>
+                                                    //     clearTimeout(
+                                                    //         delay.current
+                                                    //     )
+                                                    // }
+                                                    key={item && item.id}
+                                                    src={item && item.url}
+                                                />
+                                            </a>
                                             // <iframe
                                             //     key={
                                             //         item.snippet
@@ -207,80 +256,108 @@ export const Topic = ({}: Props) => {
                                     })}
                                 </div>
                             ))}
-                        <div
-                            style={{
-                                top: hoveredItem.positionTop + "px",
-                                left: hoveredItem.positionLeft + "px",
-                                width: hoveredItem.width + "px",
-                                // transform:
-                                //     hoveredItem.j === 0
-                                //         ? "transform: translateX(51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
-                                //         : hoveredItem.j + 1 === itemsPerRow
-                                //         ? "translateX(-51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
-                                //         :  "none",
-                            }}
-                            className={
-                                "playlist-video--large" +
-                                (isHovered
-                                    ? " playlist-video--large-open"
-                                    : " playlist-video--large-closed")
-                            }
-                            onMouseLeave={onLargeImageLeave}
-                        >
-                            <img
+
+                        {hoveredItem.item && hoveredItem.item.url && (
+                            <a
+                                href={void 0}
+                                onClick={onVideoClick}
                                 style={{
-                                    padding:
-                                        hoveredItem.item &&
-                                        hoveredItem.item.url
-                                            .split("/")
-                                            .pop()
-                                            .replace(/\.[^/.]+$/, "") ===
-                                            "mqdefault"
-                                            ? "20px 0"
-                                            : "0",
+                                    top: hoveredItem.positionTop + "px",
+                                    left: hoveredItem.positionLeft + "px",
+                                    width: hoveredItem.width + "px",
+                                    // transform:
+                                    //     hoveredItem.j === 0
+                                    //         ? "transform: translateX(51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
+                                    //         : hoveredItem.j + 1 === itemsPerRow
+                                    //         ? "translateX(-51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
+                                    //         :  "none",
                                 }}
-                                key={hoveredItem.item && hoveredItem.item.url}
-                                src={hoveredItem.item && hoveredItem.item.url}
-                            />
-                            <div className="playlist-video__info">
-                                {video.video.items && (
-                                    <>
-                                        {video.video.items[0].snippet.title}
-                                        {/* {
+                                className={
+                                    "playlist-video--large" +
+                                    (isHovered
+                                        ? " playlist-video--large-open"
+                                        : " playlist-video--large-closed")
+                                }
+                                onMouseLeave={onLargeImageLeave}
+                            >
+                                <img
+                                    style={{
+                                        padding:
+                                            hoveredItem.item &&
+                                            hoveredItem.item.url
+                                                .split("/")
+                                                .pop()
+                                                .replace(/\.[^/.]+$/, "") ===
+                                                "mqdefault"
+                                                ? "20px 0"
+                                                : "0",
+                                    }}
+                                    key={
+                                        hoveredItem.item && hoveredItem.item.url
+                                    }
+                                    src={
+                                        hoveredItem.item && hoveredItem.item.url
+                                    }
+                                />
+                                <div className="playlist-video__info">
+                                    {video.video.items && (
+                                        <>
+                                            <div className="title">
+                                                {
+                                                    video.video.items[0].snippet
+                                                        .title
+                                                }
+                                            </div>
+                                            {/* {
                                             video.video.items[0].snippet
                                                 .description
                                         } */}
-                                        <br />
-                                        <ul>
+                                            <div className="metadata">
+                                                <Eye size="14" />
+                                                <div className="statistics">
+                                                    {
+                                                        video.video.items[0]
+                                                            .statistics
+                                                            .viewCount
+                                                    }
+                                                </div>
+                                                <ThumbsUp size="14" />
+                                                <div className="statistics">
+                                                    {
+                                                        video.video.items[0]
+                                                            .statistics
+                                                            .likeCount
+                                                    }
+                                                </div>
+                                                <div className="duration">
+                                                    {formatDuration(
+                                                        video.video.items[0]
+                                                            .contentDetails
+                                                            .duration
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {/* <div className="tags">
                                             {video.video.items[0].snippet
                                                 .tags &&
-                                                video.video.items[0].snippet.tags.forEach(
-                                                    (tag: any) => {
-                                                        console.log(tag);
-                                                        return <li>{tag}</li>;
+                                                video.video.items[0].snippet.tags.map(
+                                                    (tag: any, index: any) => {
+                                                        return (
+                                                            <div
+                                                                key={index}
+                                                                className="tag"
+                                                            >
+                                                                {tag}
+                                                            </div>
+                                                        );
                                                     }
                                                 )}
-                                        </ul>
-                                        <br />
-
-                                        {
-                                            video.video.items[0].contentDetails
-                                                .duration
-                                        }
-                                        <br />
-                                        {
-                                            video.video.items[0].statistics
-                                                .viewCount
-                                        }
-                                        <br />
-                                        {
-                                            video.video.items[0].statistics
-                                                .likeCount
-                                        }
-                                    </>
-                                )}
-                            </div>
-                        </div>
+                                        </div> */}
+                                        </>
+                                    )}
+                                </div>
+                            </a>
+                        )}
                     </div>
                 </>
             )}

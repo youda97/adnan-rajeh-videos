@@ -15,7 +15,7 @@
     .row {
         padding-left: 4%;
         padding-right: 4%;
-        padding-bottom: 5.5vw;
+        margin-bottom: 5.5vw;
 
         .playlist-video:first-child {
             padding-left: 0;
@@ -26,6 +26,7 @@
         }
 
         .playlist-video {
+            padding: 28.125% 0;
             box-sizing: border-box;
             display: inline-block;
             padding: 0 0.2vw;
@@ -33,12 +34,16 @@
             border-radius: 0.2vw;
             cursor: pointer;
 
+            img {
+                width: 100%;
+            }
+
             @media screen and (min-width: 1400px) {
-                width: 16%;
+                width: 16.66666667%;
             }
 
             @media screen and (min-width: 1100px) and (max-width: 1399px) {
-                width: 19%;
+                width: 20%;
             }
 
             @media screen and (min-width: 800px) and (max-width: 1099px) {
@@ -46,15 +51,11 @@
             }
 
             @media screen and (min-width: 500px) and (max-width: 799px) {
-                width: 33.33%;
+                width: 33.33333333%;
             }
 
-            @media screen and (min-width: 415px) and (max-width: 499px) {
+            @media screen and (max-width: 499px) {
                 width: 50%;
-            }
-
-            @media screen and (max-width: 414px) {
-                width: 100%;
             }
         }
     }
@@ -67,8 +68,12 @@
 }
 
 .playlist-video--large-closed {
-    opacity: 1;
-    animation: cssAnimation 0s 0.2s forwards;
+    box-shadow: none !important;
+    animation: visibilityAnimation 0s 0.2s forwards;
+
+    .playlist-video__info {
+        animation: opacityAnimation 0.2s;
+    }
 }
 
 .playlist-video--large {
@@ -81,7 +86,7 @@
     overflow: hidden;
     cursor: pointer;
     transform: scale(1);
-    transition: all 0.2s; // transition: all 500ms;
+    transition: all 0.2s;
 
     img {
         width: 100%;
@@ -93,13 +98,59 @@
         padding: 1em;
         background-color: #181818;
         color: #ffff;
+
+        .title {
+            font-size: 16px;
+        }
+
+        .metadata {
+            display: flex;
+            align-items: center;
+            margin-top: 0.8em;
+
+            .statistics {
+                margin: 0.25em 0.5em 0.25rem 0.25em;
+                color: #ffff;
+            }
+
+            .duration {
+                margin-left: 0.5rem;
+            }
+        }
+
+        .tags {
+            display: flex;
+            margin-bottom: 0.5rem;
+
+            .tag {
+                display: flex;
+                padding-right: 0.5vw;
+            }
+
+            .tag:before {
+                color: #646464;
+                content: "\2022";
+                display: inline-block;
+                font-size: 1.2rem;
+                padding-right: 0.5vw;
+            }
+        }
     }
 }
 
-@keyframes cssAnimation {
+@keyframes visibilityAnimation {
     to {
         left: 0;
         top: 0;
         visibility: hidden;
+    }
+}
+
+@keyframes opacityAnimation {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
     }
 }
