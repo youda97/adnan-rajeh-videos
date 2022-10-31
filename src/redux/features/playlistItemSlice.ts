@@ -29,6 +29,7 @@ export const fetchPlaylistItems = createAsyncThunk(
                             const url = item.snippet.thumbnails.medium.url;
                             data.push({ id, url });
                         } else {
+                            //TODO test lowest quality
                             const url = item.snippet.thumbnails.default.url;
                             data.push({ id, url });
                         }
