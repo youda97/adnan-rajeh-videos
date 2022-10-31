@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     Home,
     Bookmark,
@@ -9,19 +9,35 @@ import {
     ChevronUp,
 } from "react-feather";
 import { Outlet, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPlaylists } from "../redux/features/playlistSlice";
 
 interface Props {}
 
 export const Header = ({}: Props) => {
+    const playlist = useSelector((state: any) => state.playlist);
+    const dispatch: any = useDispatch();
+
     const [isOpen, setIsOpen] = useState(false);
     const checkbox = useRef<any>(null);
 
-    const onClick = () => {
+    useEffect(() => {
+        dispatch(fetchPlaylists());
+    }, []);
+
+    const onMenuClick = () => {
+        checkbox.current.checked
+            ? document.body.classList.add("menu-open")
+            : document.body.classList.remove("menu-open");
+    };
+
+    const onDropdownClick = () => {
         setIsOpen(!isOpen);
     };
 
     const closeMenu = () => {
         checkbox.current.checked = false;
+        document.body.classList.remove("menu-open");
     };
 
     return (
@@ -31,18 +47,21 @@ export const Header = ({}: Props) => {
                     <div className="nav-container">
                         <input
                             ref={checkbox}
+                            onClick={onMenuClick}
                             className="checkbox"
                             type="checkbox"
                             name=""
                             id=""
                         />
-                        <div className="hamburger-lines">
-                            <span className="line line1"></span>
-                            <span className="line line2"></span>
-                            <span className="line line3"></span>
-                        </div>
-                        <div className="logo">
-                            <h1>Adnan Rajeh TV</h1>
+                        <div className="nav-container__top">
+                            <div className="hamburger-lines">
+                                <span className="line line1"></span>
+                                <span className="line line2"></span>
+                                <span className="line line3"></span>
+                            </div>
+                            <div className="logo">
+                                <h1>Adnan Rajeh TV</h1>
+                            </div>
                         </div>
                         <div className="menu">
                             <div className="menu-items">
@@ -54,13 +73,13 @@ export const Header = ({}: Props) => {
                                 </li>
                                 <li>
                                     <button
-                                        className="side-nav__submenu"
-                                        onClick={onClick}
+                                        className="side-nav__submenu--button"
+                                        onClick={onDropdownClick}
                                     >
                                         <Bookmark />
-                                        <div className="side-nav__contents">
+                                        <div className="submenu-button__contents">
                                             <span>Topics</span>
-                                            <div className="side-nav__icon">
+                                            <div className="submenu-button__icon">
                                                 {isOpen ? (
                                                     <ChevronUp />
                                                 ) : (
@@ -70,24 +89,46 @@ export const Header = ({}: Props) => {
                                         </div>
                                     </button>
                                     {isOpen && (
-                                        <ul>
-                                            <li>
-                                                <Link
-                                                    to="/topics"
-                                                    onClick={closeMenu}
-                                                >
-                                                    <span>Test 1</span>
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    to="/"
-                                                    onClick={closeMenu}
-                                                >
-                                                    <span>Test 1</span>
-                                                </Link>
-                                            </li>
-                                        </ul>
+                                        <div className="side-nav__submenu">
+                                            <ul>
+                                                {playlist.playlists.items.map(
+                                                    (playlist: any) => {
+                                                        if (
+                                                            playlist
+                                                                .contentDetails
+                                                                .itemCount > 0
+                                                        ) {
+                                                            return (
+                                                                <li
+                                                                    key={
+                                                                        playlist.id
+                                                                    }
+                                                                >
+                                                                    <Link
+                                                                        className="submenu-link"
+                                                                        to={
+                                                                            "/topics/" +
+                                                                            playlist.id
+                                                                        }
+                                                                        onClick={
+                                                                            closeMenu
+                                                                        }
+                                                                    >
+                                                                        <span className="submenu-span">
+                                                                            {
+                                                                                playlist
+                                                                                    .snippet
+                                                                                    .title
+                                                                            }
+                                                                        </span>
+                                                                    </Link>
+                                                                </li>
+                                                            );
+                                                        }
+                                                    }
+                                                )}
+                                            </ul>
+                                        </div>
                                     )}
                                 </li>
                                 <li>
