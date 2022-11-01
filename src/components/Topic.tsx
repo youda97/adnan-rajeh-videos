@@ -196,7 +196,6 @@ export const Topic = ({}: Props) => {
     };
 
     const loadPrevNextVideo = (item: any) => {
-        console.log("hi");
         dispatch(fetchVideo(item.id));
         setPrevNextVideo(item.id);
     };
