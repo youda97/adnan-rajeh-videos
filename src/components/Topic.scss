@@ -15,7 +15,7 @@
     .row {
         padding-left: 4%;
         padding-right: 4%;
-        padding-bottom: 5.5vw;
+        margin-bottom: 5.5vw;
 
         .playlist-video:first-child {
             padding-left: 0;
@@ -28,17 +28,26 @@
         .playlist-video {
             box-sizing: border-box;
             display: inline-block;
-            padding: 0 0.2vw;
+            padding-left: 0.2vw;
+            padding-right: 0.2vw;
             vertical-align: top;
             border-radius: 0.2vw;
             cursor: pointer;
 
+            img {
+                width: 100%;
+                max-height: 160px;
+                min-height: 160px;
+                object-fit: cover;
+                //TODO add media points for min and max heights
+            }
+
             @media screen and (min-width: 1400px) {
-                width: 16%;
+                width: 16.66666667%;
             }
 
             @media screen and (min-width: 1100px) and (max-width: 1399px) {
-                width: 19%;
+                width: 20%;
             }
 
             @media screen and (min-width: 800px) and (max-width: 1099px) {
@@ -46,15 +55,11 @@
             }
 
             @media screen and (min-width: 500px) and (max-width: 799px) {
-                width: 33.33%;
+                width: 33.33333333%;
             }
 
-            @media screen and (min-width: 415px) and (max-width: 499px) {
+            @media screen and (max-width: 499px) {
                 width: 50%;
-            }
-
-            @media screen and (max-width: 414px) {
-                width: 100%;
             }
         }
     }
@@ -62,13 +67,14 @@
 
 .playlist-video--large-open {
     opacity: 1 !important;
+    visibility: visible !important;
     transform: scale(1.3) !important;
     border-radius: 6px !important;
 }
 
 .playlist-video--large-closed {
-    opacity: 1;
-    animation: cssAnimation 0s 0.2s forwards;
+    box-shadow: none !important;
+    animation: visibilityAnimation 0s 0.2s forwards, opacityAnimation 0.4s;
 }
 
 .playlist-video--large {
@@ -81,11 +87,20 @@
     overflow: hidden;
     cursor: pointer;
     transform: scale(1);
-    transition: all 0.2s; // transition: all 500ms;
+    transition: all 0.2s;
+    opacity: 0;
+
+    &.hide {
+        animation: visibilityAnimation 0s 0s forwards, opacityAnimation 0s;
+    }
 
     img {
         width: 100%;
         background-color: #000;
+        max-height: 160px;
+        min-height: 160px;
+        object-fit: cover;
+        //TODO add media points for min and max heights
     }
 
     .playlist-video__info {
@@ -96,10 +111,228 @@
     }
 }
 
-@keyframes cssAnimation {
+.modal-wrapper {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+
+    .modal {
+        position: fixed;
+        top: 30px;
+        width: 80%;
+        transform-origin: center top;
+        transform: translateX(0px) translateY(calc(-123px + 2em)) scaleX(1)
+            scaleY(1) translateZ(0px);
+        max-width: 925px;
+        max-height: calc(100vh - 5%);
+        z-index: 2;
+        opacity: 0;
+        overflow: auto;
+        transform: scale(0.8);
+        transition: all 0.2s ease-in-out;
+
+        &.modal-open {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        @media screen and (max-width: 925px) {
+            width: 98%;
+        }
+
+        .video-container {
+            position: relative;
+
+            .iframe-container {
+                width: 100%;
+                height: 520px;
+                background-color: #000;
+
+                .video {
+                    width: 100%;
+                }
+            }
+
+            .transition {
+                position: absolute;
+                top: 0;
+                height: 100%;
+                width: 100%;
+                background: linear-gradient(0deg, #181818, transparent 50%);
+                // pointer-events: none;
+            }
+
+            .video-info__container {
+                background-color: #181818;
+                position: relative;
+                padding: 0 3em 50px 3em;
+                box-sizing: inherit;
+
+                .video-info {
+                    display: grid;
+                    column-gap: 2em;
+                    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+                    padding-bottom: 20px;
+
+                    .close-button {
+                        cursor: pointer;
+                        margin: 1em;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+
+                        svg {
+                            background-color: #282c34;
+                            border-radius: 50%;
+                            padding: 8px;
+                        }
+                    }
+
+                    .metadata {
+                        margin-top: 0;
+                        padding-top: 0.8em;
+                        font-size: 16px;
+                    }
+
+                    .title {
+                        padding-top: 1.25em;
+                        font-size: 20px;
+                        font-weight: 500;
+                    }
+
+                    .description {
+                        padding-top: 1.25em;
+                        font-size: 14px;
+                        line-height: 24px;
+                    }
+
+                    .video-info--right {
+                        font-size: 14px;
+                        line-height: 20px;
+                        margin: 5em 0.5em 0.5em 0;
+                        word-break: break-word;
+
+                        .tag-label {
+                            color: #777;
+                        }
+
+                        .tags {
+                            font-size: 14px;
+                            line-height: 20px;
+                            margin: 0.5em 0.5em 0.5em 0;
+                            word-break: break-word;
+                        }
+                    }
+                }
+            }
+        }
+
+        .divider {
+            border-bottom: 2px solid #404040;
+        }
+
+        .prevnext {
+            display: flex;
+            align-items: flex-end;
+            margin-top: 48px;
+            font-size: 24px;
+            font-weight: 500;
+
+            .prevnext-item {
+                width: 50%;
+
+                &:first-of-type {
+                    padding-right: 2vw;
+                }
+
+                span {
+                    display: block;
+                    margin-bottom: 20px;
+                }
+
+                .prevnext-video {
+                    display: inline-block;
+                    position: relative;
+                    width: 100%;
+
+                    img {
+                        width: 100%;
+                        max-height: 200px;
+                        min-height: 200px;
+                        background-color: #000;
+                        cursor: pointer;
+                        object-fit: cover;
+                        //TODO add media points for min and max heights
+
+                        &:hover ~ .play-icon {
+                            opacity: 1;
+                        }
+                    }
+
+                    .play-icon {
+                        align-items: center;
+                        bottom: 0;
+                        display: flex;
+                        justify-content: center;
+                        left: 0;
+                        opacity: 0;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        transition: opacity 0.2s ease-in;
+                        pointer-events: none;
+                    }
+                }
+            }
+        }
+    }
+
+    .modal-open ~ .modal-overlay {
+        opacity: 0.7;
+        background-color: #000;
+        height: 100%;
+        left: 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+    }
+}
+
+.title {
+    font-size: 16px;
+}
+
+.metadata {
+    display: flex;
+    align-items: center;
+    margin-top: 0.8em;
+
+    .statistics {
+        margin: 0.25em 0.5em 0.25rem 0.25em;
+        color: #ffff;
+    }
+
+    .duration {
+        margin-left: 0.5rem;
+    }
+}
+
+@keyframes visibilityAnimation {
     to {
         left: 0;
         top: 0;
         visibility: hidden;
+    }
+}
+
+@keyframes opacityAnimation {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
     }
 }
