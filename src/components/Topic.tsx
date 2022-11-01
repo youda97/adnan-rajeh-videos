@@ -247,20 +247,6 @@ export const Topic = ({}: Props) => {
                                                 }
                                             >
                                                 <img
-                                                    style={{
-                                                        padding:
-                                                            item &&
-                                                            item.url
-                                                                .split("/")
-                                                                .pop()
-                                                                .replace(
-                                                                    /\.[^/.]+$/,
-                                                                    ""
-                                                                ) ===
-                                                                "mqdefault"
-                                                                ? "21px 0.2vw"
-                                                                : "0 0.2vw",
-                                                    }}
                                                     key={item && item.id}
                                                     src={item && item.url}
                                                 />
@@ -297,17 +283,6 @@ export const Topic = ({}: Props) => {
                                 onMouseLeave={onLargeImageLeave}
                             >
                                 <img
-                                    style={{
-                                        padding:
-                                            hoveredItem.item &&
-                                            hoveredItem.item.url
-                                                .split("/")
-                                                .pop()
-                                                .replace(/\.[^/.]+$/, "") ===
-                                                "mqdefault"
-                                                ? "20px 0"
-                                                : "0",
-                                    }}
                                     key={
                                         hoveredItem.item && hoveredItem.item.url
                                     }
