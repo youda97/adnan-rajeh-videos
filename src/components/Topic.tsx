@@ -10,9 +10,9 @@ interface Props {}
 
 export const Topic = ({}: Props) => {
     const location = useLocation();
-    const video = useSelector((state: any) => state.video);
-    const playlist = useSelector((state: any) => state.playlist);
-    const playlistItem = useSelector((state: any) => state.playlistItem);
+    const videos = useSelector((state: any) => state.video);
+    const playlists = useSelector((state: any) => state.playlist);
+    const playlistItems = useSelector((state: any) => state.playlistItem);
     const dispatch: any = useDispatch();
 
     const [playlistId, setPlaylistId] = useState<string | undefined>("");
@@ -54,7 +54,7 @@ export const Topic = ({}: Props) => {
     }, [windowWidth]);
 
     useEffect(() => {
-        const items = playlistItem.playlistItems;
+        const items = playlistItems.items;
         if (items) {
             const result = items.reduce(
                 (resultArray: any, item: any, index: any) => {
@@ -70,13 +70,13 @@ export const Topic = ({}: Props) => {
             );
             setUpdatedItems(result);
         }
-    }, [itemsPerRow, playlistItem]);
+    }, [itemsPerRow, playlistItems]);
 
     useEffect(() => {
         if (isHovered) {
             // TODO reduce fetch calls, only fetch on load
-            dispatch(fetchVideo(hoveredItem.item.id));
-            setPrevNextVideo(hoveredItem.item.id);
+            dispatch(fetchVideo(hoveredItem.item.videoId));
+            setPrevNextVideo(hoveredItem.item.videoId);
         }
     }, [isHovered]);
 
@@ -111,21 +111,20 @@ export const Topic = ({}: Props) => {
     };
 
     const setPrevNextVideo = (id: any) => {
-        playlistItem.playlistItems.forEach((item: any, index: any) => {
-            if (item.id === id) {
-                console.log();
-                setVideoPrev(playlistItem.playlistItems[index - 1]);
-                setVideoNext(playlistItem.playlistItems[index + 1]);
+        playlistItems.items.forEach((item: any, index: any) => {
+            if (item.videoId === id) {
+                setVideoPrev(playlistItems.items[index - 1]);
+                setVideoNext(playlistItems.items[index + 1]);
             }
         });
     };
 
     const getPlaylistTitle = () => {
         let title = "";
-        if (Object.keys(playlist.playlists).length) {
-            playlist.playlists.items.forEach((item: any) => {
+        if (Object.keys(playlists).length) {
+            playlists.items.forEach((item: any) => {
                 if (item.id === playlistId) {
-                    title = item.snippet.title;
+                    title = item.title;
                 }
             });
         }
@@ -147,8 +146,8 @@ export const Topic = ({}: Props) => {
         const positionLeft = j * width + paddingLeftRow;
 
         if (i === -1 && j === -1) {
-            dispatch(fetchVideo(item.id));
-            setPrevNextVideo(item.id);
+            dispatch(fetchVideo(item.videoId));
+            setPrevNextVideo(item.videoId);
         } else {
             delay.current = setTimeout(() => {
                 setHoveredItem({ item, positionTop, positionLeft, width, j });
@@ -183,7 +182,6 @@ export const Topic = ({}: Props) => {
     };
 
     const onVideoClick = (event: any, item: any, i: any, j: any) => {
-        // setHoveredItem({ ...hoveredItem, ...item });
         if (!isHovered) {
             onImageHover(event, item, i, j);
         }
@@ -196,18 +194,18 @@ export const Topic = ({}: Props) => {
     };
 
     const loadPrevNextVideo = (item: any) => {
-        dispatch(fetchVideo(item.id));
-        setPrevNextVideo(item.id);
+        dispatch(fetchVideo(item.videoId));
+        setPrevNextVideo(item.videoId);
     };
 
     return (
         <div className="container">
-            {playlistItem.loading && <div>Loading...</div>}
-            {!playlistItem.loading && playlistItem.error ? (
-                <div>Error: {playlistItem.error}</div>
+            {playlistItems.loading && <div>Loading...</div>}
+            {!playlistItems.loading && playlistItems.error ? (
+                <div>Error: {playlistItems.error}</div>
             ) : null}
 
-            {!playlistItem.loading && playlistItem.playlistItems.length && (
+            {!playlistItems.loading && playlistItems.items.length && (
                 <>
                     <h4 className="playlist-videos__title">
                         {getPlaylistTitle()}
@@ -217,10 +215,6 @@ export const Topic = ({}: Props) => {
                             updatedItems.map((rows: any, i: any) => (
                                 <div className="row" key={i}>
                                     {rows.map((item: any, j: any) => {
-                                        // if (
-                                        //     item.snippet.title !==
-                                        //     "Private video"
-                                        // ) {
                                         return (
                                             <a
                                                 className="playlist-video"
@@ -247,8 +241,19 @@ export const Topic = ({}: Props) => {
                                                 }
                                             >
                                                 <img
-                                                    key={item && item.id}
-                                                    src={item && item.url}
+                                                    key={item.id}
+                                                    src={
+                                                        item.thumbnails &&
+                                                        item.thumbnails.high
+                                                            ? item.thumbnails
+                                                                  .high.url
+                                                            : item.thumbnails
+                                                                  .medium
+                                                            ? item.thumbnails
+                                                                  .medium.url
+                                                            : item.thumbnails
+                                                                  .default.url
+                                                    }
                                                 />
                                             </a>
                                         );
@@ -256,83 +261,81 @@ export const Topic = ({}: Props) => {
                                 </div>
                             ))}
 
-                        {hoveredItem.item && hoveredItem.item.url && (
-                            <a
-                                ref={largeInfoDisplay}
-                                href={void 0}
-                                onClick={(e) =>
-                                    onVideoClick(e, hoveredItem.item, 0, 0)
-                                }
-                                style={{
-                                    top: hoveredItem.positionTop + "px",
-                                    left: hoveredItem.positionLeft + "px",
-                                    width: hoveredItem.width + "px",
-                                    // transform:
-                                    //     hoveredItem.j === 0
-                                    //         ? "transform: translateX(51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
-                                    //         : hoveredItem.j + 1 === itemsPerRow
-                                    //         ? "translateX(-51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
-                                    //         :  "none",
-                                }}
-                                className={
-                                    "playlist-video--large" +
-                                    (isHovered
-                                        ? " playlist-video--large-open"
-                                        : " playlist-video--large-closed")
-                                }
-                                onMouseLeave={onLargeImageLeave}
-                            >
-                                <img
-                                    key={
-                                        hoveredItem.item && hoveredItem.item.url
+                        {hoveredItem.item &&
+                            Object.keys(hoveredItem.item.thumbnails).length && (
+                                <a
+                                    ref={largeInfoDisplay}
+                                    href={void 0}
+                                    onClick={(e) =>
+                                        onVideoClick(e, hoveredItem.item, 0, 0)
                                     }
-                                    src={
-                                        hoveredItem.item && hoveredItem.item.url
+                                    style={{
+                                        top: hoveredItem.positionTop + "px",
+                                        left: hoveredItem.positionLeft + "px",
+                                        width: hoveredItem.width + "px",
+                                        // transform:
+                                        //     hoveredItem.j === 0
+                                        //         ? "transform: translateX(51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
+                                        //         : hoveredItem.j + 1 === itemsPerRow
+                                        //         ? "translateX(-51px) translateY(0px) scaleX(1) scaleY(1) translateZ(0px)"
+                                        //         :  "none",
+                                    }}
+                                    className={
+                                        "playlist-video--large" +
+                                        (isHovered
+                                            ? " playlist-video--large-open"
+                                            : " playlist-video--large-closed")
                                     }
-                                />
-                                <div className="playlist-video__info">
-                                    {video.video.items && (
-                                        <>
-                                            <div className="title">
-                                                {
-                                                    video.video.items[0].snippet
-                                                        .title
-                                                }
-                                            </div>
-                                            {/* {
-                                            video.video.items[0].snippet
-                                                .description
-                                        } */}
-                                            <div className="metadata">
-                                                <Eye size="14" />
-                                                <div className="statistics">
-                                                    {
-                                                        video.video.items[0]
-                                                            .statistics
-                                                            .viewCount
-                                                    }
+                                    onMouseLeave={onLargeImageLeave}
+                                >
+                                    <img
+                                        key={hoveredItem.item.id}
+                                        src={
+                                            hoveredItem.item.thumbnails &&
+                                            hoveredItem.item.thumbnails.high
+                                                ? hoveredItem.item.thumbnails
+                                                      .high.url
+                                                : hoveredItem.item.thumbnails
+                                                      .medium
+                                                ? hoveredItem.item.thumbnails
+                                                      .medium.url
+                                                : hoveredItem.item.thumbnails
+                                                      .default.url
+                                        }
+                                    />
+                                    <div className="playlist-video__info">
+                                        {videos.items.length && (
+                                            <>
+                                                <div className="title">
+                                                    {videos.items[0].title}
                                                 </div>
-                                                <ThumbsUp size="14" />
-                                                <div className="statistics">
-                                                    {
-                                                        video.video.items[0]
-                                                            .statistics
-                                                            .likeCount
-                                                    }
+                                                <div className="metadata">
+                                                    <Eye size="14" />
+                                                    <div className="statistics">
+                                                        {
+                                                            videos.items[0]
+                                                                .viewCount
+                                                        }
+                                                    </div>
+                                                    <ThumbsUp size="14" />
+                                                    <div className="statistics">
+                                                        {
+                                                            videos.items[0]
+                                                                .likeCount
+                                                        }
+                                                    </div>
+                                                    <div className="duration">
+                                                        {formatDuration(
+                                                            videos.items[0]
+                                                                .duration
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <div className="duration">
-                                                    {formatDuration(
-                                                        video.video.items[0]
-                                                            .contentDetails
-                                                            .duration
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </a>
-                        )}
+                                            </>
+                                        )}
+                                    </div>
+                                </a>
+                            )}
                     </div>
                 </>
             )}
@@ -343,7 +346,7 @@ export const Topic = ({}: Props) => {
                     onClick={(e) => e.stopPropagation()}
                     ref={videoModal}
                 >
-                    {isVideoOpen && video.video.items && (
+                    {isVideoOpen && !videos.loading && videos.items && (
                         <div className="video-container">
                             <div className="iframe-container">
                                 <iframe
@@ -351,10 +354,10 @@ export const Topic = ({}: Props) => {
                                     height="520"
                                     src={
                                         "https://www.youtube.com/embed/" +
-                                        video.video.items[0].id +
+                                        videos.items[0].id +
                                         "?autoplay=1&mute=0&rel=0&modestbranding=1"
                                     }
-                                    title={video.video.items[0].snippet.title}
+                                    title={videos.items[0].title}
                                     frameBorder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
@@ -372,44 +375,34 @@ export const Topic = ({}: Props) => {
                                         <div className="metadata">
                                             <Eye size="14" />
                                             <div className="statistics">
-                                                {
-                                                    video.video.items[0]
-                                                        .statistics.viewCount
-                                                }
+                                                {videos.items[0].viewCount}
                                             </div>
                                             <ThumbsUp size="14" />
                                             <div className="statistics">
-                                                {
-                                                    video.video.items[0]
-                                                        .statistics.likeCount
-                                                }
+                                                {videos.items[0].likeCount}
                                             </div>
                                             <div className="duration">
                                                 {formatDuration(
-                                                    video.video.items[0]
-                                                        .contentDetails.duration
+                                                    videos.items[0].duration
                                                 )}
                                             </div>
                                         </div>
                                         <div className="title">
-                                            {video.video.items[0].snippet.title}
+                                            {videos.items[0].title}
                                         </div>
                                         <div className="description">
-                                            {
-                                                video.video.items[0].snippet
-                                                    .description
-                                            }
+                                            {videos.items[0].description}
                                         </div>
                                     </div>
 
                                     <div className="video-info--right">
-                                        {video.video.items[0].snippet.tags && (
+                                        {videos.items[0].tags && (
                                             <>
                                                 <span className="tag-label">
                                                     Tags:
                                                 </span>
                                                 <div className="tags">
-                                                    {video.video.items[0].snippet.tags.map(
+                                                    {videos.items[0].tags.map(
                                                         (
                                                             tag: any,
                                                             index: any
@@ -417,9 +410,7 @@ export const Topic = ({}: Props) => {
                                                             return (
                                                                 tag +
                                                                 (index ===
-                                                                video.video
-                                                                    .items[0]
-                                                                    .snippet
+                                                                videos.items[0]
                                                                     .tags
                                                                     .length -
                                                                     1
@@ -437,41 +428,87 @@ export const Topic = ({}: Props) => {
                                 <div className="divider"></div>
 
                                 <div className="prevnext">
-                                    {videoPrev && (
-                                        <div className="prevnext-item">
-                                            <span>Previous Video:</span>
-                                            <a
-                                                className="prevnext-video"
-                                                href={void 0}
-                                                onClick={() =>
-                                                    loadPrevNextVideo(videoPrev)
-                                                }
-                                            >
-                                                <img src={videoPrev.url} />
-                                                <div className="play-icon">
-                                                    <PlayCircle size="40" />
-                                                </div>
-                                            </a>
-                                        </div>
-                                    )}
+                                    {videoPrev &&
+                                        Object.keys(videoPrev).length && (
+                                            <div className="prevnext-item">
+                                                <span>Previous Video:</span>
+                                                <a
+                                                    className="prevnext-video"
+                                                    href={void 0}
+                                                    onClick={() =>
+                                                        loadPrevNextVideo(
+                                                            videoPrev
+                                                        )
+                                                    }
+                                                >
+                                                    <img
+                                                        src={
+                                                            videoPrev.thumbnails &&
+                                                            videoPrev.thumbnails
+                                                                .high
+                                                                ? videoPrev
+                                                                      .thumbnails
+                                                                      .high.url
+                                                                : videoPrev
+                                                                      .thumbnails
+                                                                      .medium
+                                                                ? videoPrev
+                                                                      .thumbnails
+                                                                      .medium
+                                                                      .url
+                                                                : videoPrev
+                                                                      .thumbnails
+                                                                      .default
+                                                                      .url
+                                                        }
+                                                    />
+                                                    <div className="play-icon">
+                                                        <PlayCircle size="40" />
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        )}
 
-                                    {videoNext && (
-                                        <div className="prevnext-item">
-                                            <span>Next Video:</span>
-                                            <a
-                                                className="prevnext-video"
-                                                href={void 0}
-                                                onClick={() =>
-                                                    loadPrevNextVideo(videoNext)
-                                                }
-                                            >
-                                                <img src={videoNext.url} />
-                                                <div className="play-icon">
-                                                    <PlayCircle size="40" />
-                                                </div>
-                                            </a>
-                                        </div>
-                                    )}
+                                    {videoNext &&
+                                        Object.keys(videoNext).length && (
+                                            <div className="prevnext-item">
+                                                <span>Next Video:</span>
+                                                <a
+                                                    className="prevnext-video"
+                                                    href={void 0}
+                                                    onClick={() =>
+                                                        loadPrevNextVideo(
+                                                            videoNext
+                                                        )
+                                                    }
+                                                >
+                                                    <img
+                                                        src={
+                                                            videoNext.thumbnails &&
+                                                            videoNext.thumbnails
+                                                                .high
+                                                                ? videoNext
+                                                                      .thumbnails
+                                                                      .high.url
+                                                                : videoNext
+                                                                      .thumbnails
+                                                                      .medium
+                                                                ? videoNext
+                                                                      .thumbnails
+                                                                      .medium
+                                                                      .url
+                                                                : videoNext
+                                                                      .thumbnails
+                                                                      .default
+                                                                      .url
+                                                        }
+                                                    />
+                                                    <div className="play-icon">
+                                                        <PlayCircle size="40" />
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        )}
                                 </div>
                             </div>
                         </div>
