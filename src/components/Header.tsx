@@ -15,7 +15,7 @@ import { fetchPlaylists } from "../redux/features/playlistSlice";
 interface Props {}
 
 export const Header = ({}: Props) => {
-    const playlist = useSelector((state: any) => state.playlist);
+    const playlists = useSelector((state: any) => state.playlist);
     const dispatch: any = useDispatch();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -91,12 +91,11 @@ export const Header = ({}: Props) => {
                                     {isOpen && (
                                         <div className="side-nav__submenu">
                                             <ul>
-                                                {playlist.playlists.items.map(
+                                                {playlists.items.map(
                                                     (playlist: any) => {
                                                         if (
-                                                            playlist
-                                                                .contentDetails
-                                                                .itemCount > 0
+                                                            playlist.itemCount >
+                                                            0
                                                         ) {
                                                             return (
                                                                 <li
@@ -116,9 +115,7 @@ export const Header = ({}: Props) => {
                                                                     >
                                                                         <span className="submenu-span">
                                                                             {
-                                                                                playlist
-                                                                                    .snippet
-                                                                                    .title
+                                                                                playlist.title
                                                                             }
                                                                         </span>
                                                                     </Link>
