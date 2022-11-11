@@ -6,7 +6,7 @@ const YOUTUBE_API = "https://www.googleapis.com/youtube/v3/videos";
 const initialState = {
     loading: false,
     items: [],
-    error: "",
+    error: {},
 };
 
 export const fetchVideo = createAsyncThunk("video/fetchVideo", (video: any) => {
@@ -62,7 +62,7 @@ const videoSlice = createSlice({
             .addCase(fetchVideo.rejected, (state, action) => {
                 state.loading = false;
                 state.items = [];
-                state.error = action.error.message || "Error fetching data.";
+                state.error = action.error;
             });
     },
 });

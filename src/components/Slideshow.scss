@@ -1,4 +1,4 @@
-.row {
+.slideshow-row {
     transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
     padding-bottom: 3vw;
 
@@ -17,9 +17,11 @@
             width: fit-content;
             font-size: 1.4vw;
             font-weight: 500;
-            margin: 0 4% 0.8em;
+            margin: 0 4% 0.6em;
             min-width: 6em;
             cursor: pointer;
+            text-decoration: none;
+            color: #ffff;
 
             @media screen and (max-width: 800px) {
                 font-size: 12px !important;
@@ -27,8 +29,6 @@
 
             .row-header-title {
                 display: table-cell;
-                // font-size: 1.4vw;
-                line-height: 1.25vw;
                 vertical-align: bottom;
             }
 
@@ -68,6 +68,10 @@
                         width: 8px;
                         height: 8px;
                     }
+
+                    @media screen and (max-width: 1060px) {
+                        margin-bottom: 0.1em;
+                    }
                 }
             }
 
@@ -85,10 +89,11 @@
         }
     }
 
-    .recent-videos__content {
+    .playlist__content {
         position: relative;
         transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
-        padding: 0 4%;
+        padding-left: 4%;
+        padding-right: 4%;
 
         .handle {
             bottom: 0;
@@ -134,11 +139,7 @@
             white-space: nowrap;
             transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
 
-            .recent-video {
-                // width: 325px;
-                // height: 185px;
-                // padding: 10px;
-
+            .playlist-video {
                 box-sizing: border-box;
                 display: inline-block;
                 padding-left: 0.2vw;

@@ -7,7 +7,7 @@ const RESULTS = 50;
 const initialState = {
     loading: false,
     items: [],
-    error: "",
+    error: {},
 };
 
 export const fetchPlaylistItems = createAsyncThunk(
@@ -64,7 +64,7 @@ const playlistItemSlice = createSlice({
             .addCase(fetchPlaylistItems.rejected, (state, action) => {
                 state.loading = false;
                 state.items = [];
-                state.error = action.error.message || "Error fetching data.";
+                state.error = action.error;
             });
     },
 });

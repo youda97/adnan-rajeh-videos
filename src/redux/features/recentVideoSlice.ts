@@ -7,7 +7,7 @@ const RESULTS = 10;
 const initialState = {
     loading: false,
     items: [],
-    error: "",
+    error: {},
 };
 
 export const fetchRecentVideos = createAsyncThunk(
@@ -56,7 +56,7 @@ const recentVideoSlice = createSlice({
             .addCase(fetchRecentVideos.rejected, (state, action) => {
                 state.loading = false;
                 state.items = [];
-                state.error = action.error.message || "Error fetching data.";
+                state.error = action.error;
             });
     },
 });

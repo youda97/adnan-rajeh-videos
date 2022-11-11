@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "react-feather";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "react-feather";
+import { VideoTile } from "./VideoTile";
+import { useDispatch, useSelector } from "react-redux";
 
 interface Props {
-    playlist: any;
+    playlistItems: any;
 }
 
-export const Slideshow = ({ playlist }: Props) => {
+export const Slideshow = ({ playlistItems }: Props) => {
+    const playlists = useSelector((state: any) => state.playlist);
+    const dispatch: any = useDispatch();
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
@@ -21,7 +26,7 @@ export const Slideshow = ({ playlist }: Props) => {
 
     useEffect(() => {
         updateTotalPages(window.innerWidth);
-    }, [playlist]);
+    }, [playlistItems]);
 
     const updateTotalPages = (windowWidth: any) => {
         let itemWidth = 0;
@@ -38,12 +43,17 @@ export const Slideshow = ({ playlist }: Props) => {
         }
 
         const itemsInRow = Math.floor(windowWidth / (windowWidth * itemWidth));
-        if (playlist && playlist.items) {
-            const filteredVideos = playlist.items.filter((video: any) =>
+        if (playlistItems && playlistItems.items) {
+            const filteredVideos = playlistItems.items.filter((video: any) =>
                 Object.keys(video.thumbnails).includes("default")
             );
 
             setTotalPages(filteredVideos.length / itemsInRow);
+
+            dispatch({
+                type: "SET_FAVORITE_ITEM",
+                payload: { itemsInRow },
+            });
         }
     };
 
@@ -61,19 +71,43 @@ export const Slideshow = ({ playlist }: Props) => {
         return indicators;
     };
 
+    const getPlaylistTitle = () => {
+        let title = "";
+        playlists.items.forEach((item: any) => {
+            if (item.id === playlistItems.items[0].playlistId) {
+                title = item.title;
+            }
+        });
+
+        return title;
+    };
+
     return (
-        <div className="row">
+        <div className="slideshow-row">
             <h2 className="row-header">
-                <a href={void 0}>
-                    <div className="row-header-title">Recent Videos</div>
-                    <div className="arrow-header">
-                        <div className="see-all-link">Explore All</div>
-                        <ChevronRight size="16" className="chevron-right" />
+                <Link
+                    to={
+                        playlistItems.items[0].playlistId
+                            ? "/topics/" + playlistItems.items[0].playlistId
+                            : "#"
+                    }
+                >
+                    <div className="row-header-title">
+                        {playlistItems.items[0].playlistId
+                            ? getPlaylistTitle()
+                            : "Recent Videos"}
                     </div>
-                </a>
+
+                    {playlistItems.items[0].playlistId ? (
+                        <div className="arrow-header">
+                            <div className="see-all-link">Explore All</div>
+                            <ChevronRight size="16" className="chevron-right" />
+                        </div>
+                    ) : null}
+                </Link>
             </h2>
 
-            <div className="recent-videos__content">
+            <div className="playlist__content">
                 {currentIndex !== 0 && (
                     <span
                         className="handle left"
@@ -90,39 +124,7 @@ export const Slideshow = ({ playlist }: Props) => {
                         transform: `translateX(-${currentIndex * 100}%)`,
                     }}
                 >
-                    {playlist.items.map((video: any) => (
-                        // <iframe
-                        //     key={video.id.videoId}
-                        //     className="recent-video"
-                        //     width="560"
-                        //     height="315"
-                        //     src={
-                        //         "https://www.youtube.com/embed/" +
-                        //         video.id.videoId +
-                        //         "?rel=0&modestbranding=1"
-                        //     }
-                        //     title={video.snippet.title}
-                        //     frameBorder="0"
-                        //     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        //     allowFullScreen
-                        // ></iframe>
-                        <a
-                            href={void 0}
-                            key={video.videoId}
-                            className="recent-video"
-                        >
-                            <img
-                                key={video.videoId}
-                                src={
-                                    video.thumbnails && video.thumbnails.high
-                                        ? video.thumbnails.high.url
-                                        : video.thumbnails.medium
-                                        ? video.thumbnails.medium.url
-                                        : video.thumbnails.default.url
-                                }
-                            ></img>
-                        </a>
-                    ))}
+                    <VideoTile row={playlistItems.items} rowIndex={0} key={0} />
                 </div>
                 {currentIndex < totalPages - 1 && (
                     <span

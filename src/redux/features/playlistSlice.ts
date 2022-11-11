@@ -7,7 +7,7 @@ const RESULTS = 50;
 const initialState = {
     loading: false,
     items: [],
-    error: "",
+    error: {},
 };
 
 export const fetchPlaylists = createAsyncThunk(
@@ -27,14 +27,16 @@ export const fetchPlaylists = createAsyncThunk(
                     const thumbnails = item.snippet.thumbnails;
                     const itemCount = item.contentDetails.itemCount;
 
-                    data.push({
-                        id,
-                        title,
-                        description,
-                        publishedAt,
-                        thumbnails,
-                        itemCount,
-                    });
+                    if (itemCount !== 0) {
+                        data.push({
+                            id,
+                            title,
+                            description,
+                            publishedAt,
+                            thumbnails,
+                            itemCount,
+                        });
+                    }
                 });
                 return data;
             });
@@ -58,7 +60,7 @@ const playlistSlice = createSlice({
             .addCase(fetchPlaylists.rejected, (state, action) => {
                 state.loading = false;
                 state.items = [];
-                state.error = action.error.message || "Error fetching data.";
+                state.error = action.error;
             });
     },
 });
