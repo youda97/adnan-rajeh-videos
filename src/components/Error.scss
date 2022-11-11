@@ -1,0 +1,43 @@
+.error {
+    display: flex;
+    justify-content: center;
+    height: calc(100vh - 260px);
+    padding-top: 200px;
+
+    .column {
+        padding: 0 50px;
+
+        img {
+            width: 16em;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin: 15px 0px;
+            font-weight: 400;
+        }
+
+        h2 {
+            font-size: 3rem;
+            margin: 0 0 1rem 0;
+            font-weight: 300;
+        }
+
+        p {
+            margin: 0;
+        }
+    }
+}
+
+@media screen and (max-width: 1020px) {
+    .column {
+        padding: 0 20px !important;
+    }
+}
+
+@media screen and (max-width: 745px) {
+    .error {
+        padding-top: 50px;
+        height: calc(100vh - 110px);
+    }
+}

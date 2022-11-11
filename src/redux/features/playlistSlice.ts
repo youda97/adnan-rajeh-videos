@@ -6,8 +6,8 @@ const RESULTS = 50;
 
 const initialState = {
     loading: false,
-    playlists: [],
-    error: "",
+    items: [],
+    error: {},
 };
 
 export const fetchPlaylists = createAsyncThunk(
@@ -15,9 +15,31 @@ export const fetchPlaylists = createAsyncThunk(
     () => {
         return axios
             .get(
-                `${YOUTUBE_API}?key=${process.env.REACT_APP_YOUTUBE_API_KEY}&channelId=UCV4_IPy-P9Gbdvxn-FygEOg&part=snippet,contentDetails,id&order=date&maxResults=${RESULTS}`
+                `${YOUTUBE_API}?key=${process.env.REACT_APP_YOUTUBE_API_KEY}&channelId=UCV4_IPy-P9Gbdvxn-FygEOg&part=contentDetails,id,player,snippet,status&order=date&maxResults=${RESULTS}`
             )
-            .then((response) => response.data);
+            .then((response) => {
+                const data: any = [];
+                response.data.items.forEach((item: any) => {
+                    const id = item.id;
+                    const title = item.snippet.title;
+                    const description = item.snippet.description;
+                    const publishedAt = item.snippet.publishedAt;
+                    const thumbnails = item.snippet.thumbnails;
+                    const itemCount = item.contentDetails.itemCount;
+
+                    if (itemCount !== 0) {
+                        data.push({
+                            id,
+                            title,
+                            description,
+                            publishedAt,
+                            thumbnails,
+                            itemCount,
+                        });
+                    }
+                });
+                return data;
+            });
     }
 );
 
@@ -32,13 +54,13 @@ const playlistSlice = createSlice({
             })
             .addCase(fetchPlaylists.fulfilled, (state, action) => {
                 state.loading = false;
-                state.playlists = action.payload;
+                state.items = action.payload;
                 state.error = "";
             })
             .addCase(fetchPlaylists.rejected, (state, action) => {
                 state.loading = false;
-                state.playlists = [];
-                state.error = action.error.message || "Error fetching data.";
+                state.items = [];
+                state.error = action.error;
             });
     },
 });

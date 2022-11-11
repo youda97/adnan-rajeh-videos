@@ -1,0 +1,73 @@
+.container {
+    margin-top: 60px;
+    min-height: calc(100vh + 60px);
+    font-size: calc(10px + 2vmin);
+    background-color: #282c34;
+    color: #ffff;
+
+    .youtube-overlay {
+        position: relative;
+        overflow: hidden;
+        width: 100vw;
+        height: calc(56.25vw - 60px);
+        max-height: calc(100vh - 175px);
+        min-height: 275px;
+    }
+}
+
+.no-toast {
+    height: 45px;
+}
+
+.notification-wrapper {
+    position: relative;
+    margin-left: 45px;
+
+    .toast {
+        background-color: #707070;
+        color: #ffff;
+        width: 150px;
+        padding: 12px;
+        margin-top: 5px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19),
+            0 6px 6px rgba(0, 0, 0, 0.23);
+        font-size: 12px;
+        line-height: 16px;
+        border-radius: 25px;
+
+        animation-name: float;
+        animation-duration: 1.5s;
+        animation-iteration-count: infinite;
+
+        .caret {
+            position: absolute;
+            left: 20px;
+            top: -4px;
+            height: 1rem;
+            width: 1rem;
+            background-color: #707070;
+            transform: rotate(45deg);
+        }
+
+        p {
+            margin: 0;
+            padding-left: 5px;
+        }
+    }
+}
+
+.slideshows {
+    position: relative;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0%);
+    }
+    50% {
+        transform: translateY(8%);
+    }
+    100% {
+        transform: translateY(0%);
+    }
+}

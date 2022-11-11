@@ -15,7 +15,7 @@ import { fetchPlaylists } from "../redux/features/playlistSlice";
 interface Props {}
 
 export const Header = ({}: Props) => {
-    const playlist = useSelector((state: any) => state.playlist);
+    const playlists = useSelector((state: any) => state.playlist);
     const dispatch: any = useDispatch();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -91,40 +91,32 @@ export const Header = ({}: Props) => {
                                     {isOpen && (
                                         <div className="side-nav__submenu">
                                             <ul>
-                                                {playlist.playlists.items.map(
+                                                {playlists.items.map(
                                                     (playlist: any) => {
-                                                        if (
-                                                            playlist
-                                                                .contentDetails
-                                                                .itemCount > 0
-                                                        ) {
-                                                            return (
-                                                                <li
-                                                                    key={
+                                                        return (
+                                                            <li
+                                                                key={
+                                                                    playlist.id
+                                                                }
+                                                            >
+                                                                <Link
+                                                                    className="submenu-link"
+                                                                    to={
+                                                                        "/topics/" +
                                                                         playlist.id
                                                                     }
+                                                                    onClick={
+                                                                        closeMenu
+                                                                    }
                                                                 >
-                                                                    <Link
-                                                                        className="submenu-link"
-                                                                        to={
-                                                                            "/topics/" +
-                                                                            playlist.id
+                                                                    <span className="submenu-span">
+                                                                        {
+                                                                            playlist.title
                                                                         }
-                                                                        onClick={
-                                                                            closeMenu
-                                                                        }
-                                                                    >
-                                                                        <span className="submenu-span">
-                                                                            {
-                                                                                playlist
-                                                                                    .snippet
-                                                                                    .title
-                                                                            }
-                                                                        </span>
-                                                                    </Link>
-                                                                </li>
-                                                            );
-                                                        }
+                                                                    </span>
+                                                                </Link>
+                                                            </li>
+                                                        );
                                                     }
                                                 )}
                                             </ul>
@@ -132,7 +124,7 @@ export const Header = ({}: Props) => {
                                     )}
                                 </li>
                                 <li>
-                                    <Link to="/" onClick={closeMenu}>
+                                    <Link to="/livestream" onClick={closeMenu}>
                                         <Radio />
                                         <span>Livestream</span>
                                     </Link>

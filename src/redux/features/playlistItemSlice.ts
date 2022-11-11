@@ -6,8 +6,8 @@ const RESULTS = 50;
 
 const initialState = {
     loading: false,
-    playlistItems: [],
-    error: "",
+    items: [],
+    error: {},
 };
 
 export const fetchPlaylistItems = createAsyncThunk(
@@ -15,24 +15,31 @@ export const fetchPlaylistItems = createAsyncThunk(
     (playlistId: any) => {
         return axios
             .get(
-                `${YOUTUBE_API}?key=${process.env.REACT_APP_YOUTUBE_API_KEY}&playlistId=${playlistId}&part=snippet,id&order=date&maxResults=${RESULTS}`
+                `${YOUTUBE_API}?key=${process.env.REACT_APP_YOUTUBE_API_KEY}&playlistId=${playlistId}&part=id,snippet,status&order=date&maxResults=${RESULTS}`
             )
             .then((response) => {
                 let data: any = [];
                 response.data.items.forEach((item: any) => {
-                    if (Object.keys(item.snippet.thumbnails).length) {
-                        const id = item.snippet.resourceId.videoId;
-                        if (item.snippet.thumbnails.standard) {
-                            const url = item.snippet.thumbnails.standard.url;
-                            data.push({ id, url });
-                        } else if (item.snippet.thumbnails.medium) {
-                            const url = item.snippet.thumbnails.medium.url;
-                            data.push({ id, url });
-                        } else {
-                            //TODO test lowest quality
-                            const url = item.snippet.thumbnails.default.url;
-                            data.push({ id, url });
-                        }
+                    const id = item.id;
+                    const playlistId = item.snippet.playlistId;
+                    const title = item.snippet.title;
+                    const description = item.snippet.description;
+                    const publishedAt = item.snippet.publishedAt;
+                    const thumbnails = item.snippet.thumbnails;
+                    const videoId = item.snippet.resourceId.videoId;
+                    const status = item.status.privacyStatus;
+
+                    if (status === "public") {
+                        data.push({
+                            id,
+                            playlistId,
+                            title,
+                            description,
+                            publishedAt,
+                            thumbnails,
+                            videoId,
+                            status,
+                        });
                     }
                 });
                 return data;
@@ -51,13 +58,13 @@ const playlistItemSlice = createSlice({
             })
             .addCase(fetchPlaylistItems.fulfilled, (state, action) => {
                 state.loading = false;
-                state.playlistItems = action.payload;
+                state.items = action.payload;
                 state.error = "";
             })
             .addCase(fetchPlaylistItems.rejected, (state, action) => {
                 state.loading = false;
-                state.playlistItems = [];
-                state.error = action.error.message || "Error fetching data.";
+                state.items = [];
+                state.error = action.error;
             });
     },
 });
