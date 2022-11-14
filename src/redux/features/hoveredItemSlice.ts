@@ -1,7 +1,6 @@
 import { createAction, createSlice } from "@reduxjs/toolkit";
 
-export const setHoveredItem = createAction<any>("SET_FAVORITE_ITEM");
-export const removeHoveredItem = createAction<any>("REMOVE_FAVORITE_ITEM");
+export const setHoveredItem = createAction<any>("SET_HOVERED_ITEM");
 
 const initialState = {
     row: [],
@@ -16,6 +15,7 @@ const initialState = {
     itemsInRow: 0,
     videoPrev: {},
     videoNext: {},
+    isPagination: false,
 };
 
 const HoveredItemSlice = createSlice({
@@ -44,6 +44,8 @@ const HoveredItemSlice = createSlice({
                 state.videoPrev = { ...action.payload.videoPrev };
             if ("videoNext" in action.payload)
                 state.videoNext = { ...action.payload.videoNext };
+            if ("isPagination" in action.payload)
+                state.isPagination = action.payload.isPagination;
         });
     },
 });

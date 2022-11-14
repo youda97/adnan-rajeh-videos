@@ -23,11 +23,12 @@ export const fetchVideo = createAsyncThunk("video/fetchVideo", (video: any) => {
                 const publishedAt = item.snippet.publishedAt;
                 const thumbnails = item.snippet.thumbnails;
                 const status = item.status.privacyStatus;
+                const tags = item.snippet.tags;
                 const duration = item.contentDetails.duration;
                 const viewCount = item.statistics.viewCount;
                 const likeCount = item.statistics.likeCount;
 
-                if (status === "public") {
+                if (status === "public" && id) {
                     data.push({
                         id,
                         title,
@@ -35,6 +36,7 @@ export const fetchVideo = createAsyncThunk("video/fetchVideo", (video: any) => {
                         publishedAt,
                         thumbnails,
                         status,
+                        tags,
                         duration,
                         viewCount,
                         likeCount,

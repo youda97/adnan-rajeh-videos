@@ -29,7 +29,7 @@ export const fetchPlaylistItems = createAsyncThunk(
                     const videoId = item.snippet.resourceId.videoId;
                     const status = item.status.privacyStatus;
 
-                    if (status === "public") {
+                    if (status === "public" && videoId) {
                         data.push({
                             id,
                             playlistId,

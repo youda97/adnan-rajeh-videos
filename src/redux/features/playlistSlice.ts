@@ -27,7 +27,7 @@ export const fetchPlaylists = createAsyncThunk(
                     const thumbnails = item.snippet.thumbnails;
                     const itemCount = item.contentDetails.itemCount;
 
-                    if (itemCount !== 0) {
+                    if (itemCount !== 0 && id) {
                         data.push({
                             id,
                             title,
