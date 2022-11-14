@@ -7,10 +7,12 @@ import {
     HelpCircle,
     ChevronDown,
     ChevronUp,
+    Search,
 } from "react-feather";
-import { Outlet, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { fetchPlaylists } from "../redux/features/playlistSlice";
+import { fetchSearch } from "../redux/features/searchSlice";
 
 interface Props {}
 
@@ -19,11 +21,26 @@ export const Header = ({}: Props) => {
     const dispatch: any = useDispatch();
 
     const [isOpen, setIsOpen] = useState(false);
+    const [previousPath, setPreviousPath] = useState("/");
+
     const checkbox = useRef<any>(null);
+    const searchInput = useRef<any>(null);
+
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
 
     useEffect(() => {
         dispatch(fetchPlaylists());
     }, []);
+
+    useEffect(() => {
+        if (pathname !== "/search") {
+            searchInput.current.value = "";
+            if (searchInput.current.classList.contains("focused")) {
+                searchInput.current.classList.remove("focused");
+            }
+        }
+    }, [pathname]);
 
     const onMenuClick = () => {
         checkbox.current.checked
@@ -38,6 +55,20 @@ export const Header = ({}: Props) => {
     const closeMenu = () => {
         checkbox.current.checked = false;
         document.body.classList.remove("menu-open");
+    };
+
+    const handleInputChange = (e) => {
+        if (pathname !== "/search") {
+            setPreviousPath(pathname);
+        }
+
+        if (e.target.value !== "") {
+            navigate("/search");
+            // Very expensive call
+            dispatch(fetchSearch(e.target.value));
+        } else {
+            navigate(previousPath);
+        }
     };
 
     return (
@@ -61,6 +92,31 @@ export const Header = ({}: Props) => {
                             </div>
                             <div className="logo">
                                 <h1>Adnan Rajeh TV</h1>
+                            </div>
+
+                            <div className="search-container">
+                                <form action="/search" method="get">
+                                    <input
+                                        ref={searchInput}
+                                        className={
+                                            "search expandright" +
+                                            (searchInput.current?.value !== ""
+                                                ? " focused"
+                                                : "")
+                                        }
+                                        id="searchright"
+                                        type="search"
+                                        name="q"
+                                        placeholder="Search"
+                                        onChange={handleInputChange}
+                                    />
+                                    <label
+                                        className="button searchbutton"
+                                        htmlFor="searchright"
+                                    >
+                                        <Search />
+                                    </label>
+                                </form>
                             </div>
                         </div>
                         <div className="menu">
@@ -130,13 +186,13 @@ export const Header = ({}: Props) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/" onClick={closeMenu}>
+                                    <Link to="/settings" onClick={closeMenu}>
                                         <Settings />
                                         <span>Settings</span>
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/" onClick={closeMenu}>
+                                    <Link to="/help" onClick={closeMenu}>
                                         <HelpCircle />
                                         <span>Help</span>
                                     </Link>
