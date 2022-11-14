@@ -61,27 +61,11 @@
 
     .statistics {
         margin: 0.25em 0.5em 0.25rem 0.25em;
-        color: #ffff;
+        color: var(--color);
     }
 
-    .duration {
-        margin-left: 0.5rem;
-    }
-}
-
-@keyframes visibilityAnimation {
-    to {
-        left: 0;
-        top: 0;
-        visibility: hidden;
-    }
-}
-
-@keyframes opacityAnimation {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
+    .duration,
+    .published {
+        margin: 0 0.5rem;
     }
 }
