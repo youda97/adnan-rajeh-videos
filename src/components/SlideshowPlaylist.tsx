@@ -37,19 +37,35 @@ export const SlideshowPlaylist = ({ playlist }: Props) => {
                         const videoId = item.snippet.resourceId.videoId;
                         const status = item.status.privacyStatus;
 
-                        if (status === "public") {
-                            data.push({
-                                id,
-                                playlistId,
-                                title,
-                                description,
-                                publishedAt,
-                                thumbnails,
-                                videoId,
-                                status,
-                            });
+                        if (status === "public" && videoId) {
+                            if (!data.length) {
+                                data.push({
+                                    id,
+                                    playlistId,
+                                    title,
+                                    description,
+                                    publishedAt,
+                                    thumbnails,
+                                    videoId,
+                                    status,
+                                });
+                            } else if (
+                                data.every((item) => item.videoId !== videoId)
+                            ) {
+                                data.push({
+                                    id,
+                                    playlistId,
+                                    title,
+                                    description,
+                                    publishedAt,
+                                    thumbnails,
+                                    videoId,
+                                    status,
+                                });
+                            }
                         }
                     });
+
                     setPlaylistItems({
                         loading: false,
                         items: data,
