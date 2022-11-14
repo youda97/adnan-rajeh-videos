@@ -1,0 +1,93 @@
+.justify-content-center {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 50%;
+    margin: 0 auto;
+
+    @media screen and (max-width: 992px) {
+        max-width: 80%;
+    }
+
+    @media screen and (max-width: 768px) {
+        max-width: 100%;
+    }
+}
+
+.settings {
+    display: flex;
+    align-items: center;
+    padding-right: 15px;
+    padding-left: 15px;
+    min-height: calc(100vh - 60px);
+
+    .settings-box {
+        background-color: var(--detail-tile);
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin-bottom: 10px;
+
+        fieldset {
+            border: 0;
+            margin-bottom: 0;
+
+            .name {
+                text-transform: uppercase;
+                padding-bottom: 10px;
+            }
+
+            .info {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+
+                .info-text {
+                    color: var(--info-text);
+                    margin-right: 15px;
+                }
+
+                .switch {
+                    display: flex;
+                    position: relative;
+                    width: 3.5rem;
+                    height: 2rem;
+
+                    input[type="checkbox"] {
+                        visibility: hidden;
+                    }
+
+                    input[type="checkbox"]:checked + label {
+                        background: var(--toggle-checked);
+                    }
+
+                    input[type="checkbox"]:checked + label:after {
+                        left: 2rem;
+                    }
+
+                    label {
+                        width: 3.75rem;
+                        height: 2rem;
+                        position: absolute;
+                        background: var(--toggle-background);
+                        top: 0;
+                        left: 0;
+                        border-radius: 50px;
+                        cursor: pointer;
+
+                        &:after {
+                            content: "";
+                            width: 1.5rem;
+                            height: 1.5rem;
+                            border-radius: 50px;
+                            position: absolute;
+                            top: 4px;
+                            left: 4px;
+                            background: white;
+                            transition: all 0.1s;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

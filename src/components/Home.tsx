@@ -14,6 +14,7 @@ export const Home = ({}: Props) => {
     const recentVideos = useSelector((state: any) => state.recentVideo);
     const playlists = useSelector((state: any) => state.playlist);
     const hoveredItem = useSelector((state: any) => state.hoveredItem);
+    const settings = useSelector((state: any) => state.settings);
 
     const dispatch: any = useDispatch();
 
@@ -23,6 +24,7 @@ export const Home = ({}: Props) => {
     const containerRef = useRef<any>(null);
 
     useEffect(() => {
+        // Very expensive call
         dispatch(fetchRecentVideos());
         dispatch(fetchPlaylists());
 
@@ -58,7 +60,7 @@ export const Home = ({}: Props) => {
                     hoveredItem.columnIndex * videoTile.offsetWidth;
 
                 dispatch({
-                    type: "SET_FAVORITE_ITEM",
+                    type: "SET_HOVERED_ITEM",
                     payload: {
                         positionLeft,
                         positionTop,
@@ -87,7 +89,14 @@ export const Home = ({}: Props) => {
                             src={
                                 "https://www.youtube.com/embed/" +
                                 recentVideos.items[0].videoId +
-                                "?autoplay=1&mute=1&rel=0&modestbranding=1&autohide=1&showinfo=0"
+                                `?autoplay=${
+                                    settings.autoplay ? "1" : "0"
+                                }&mute=${
+                                    settings.autoplay ||
+                                    (!settings.autoplay && settings.mute)
+                                        ? "1"
+                                        : "0"
+                                }&rel=0&modestbranding=1&autohide=1&showinfo=0`
                             }
                             title={recentVideos.items[0].title}
                             frameBorder="0"
@@ -95,7 +104,9 @@ export const Home = ({}: Props) => {
                             allowFullScreen
                         ></iframe>
 
-                        {showNotification ? (
+                        {showNotification &&
+                        (settings.autoplay ||
+                            (!settings.autoplay && settings.mute)) ? (
                             <div className="notification-wrapper">
                                 <div className="toast">
                                     <div className="caret"></div>
