@@ -26,13 +26,15 @@ export const fetchRecentVideos = createAsyncThunk(
                     const publishedAt = item.snippet.publishedAt;
                     const thumbnails = item.snippet.thumbnails;
 
-                    data.push({
-                        videoId,
-                        title,
-                        description,
-                        publishedAt,
-                        thumbnails,
-                    });
+                    if (videoId) {
+                        data.push({
+                            videoId,
+                            title,
+                            description,
+                            publishedAt,
+                            thumbnails,
+                        });
+                    }
                 });
                 return data;
             });

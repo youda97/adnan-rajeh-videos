@@ -2,11 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { Eye, ThumbsUp } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
 
-interface Props {
-    isTopic: boolean;
-}
+interface Props {}
 
-export const LargeVideoTile = ({ isTopic }: Props) => {
+export const LargeVideoTile = ({}: Props) => {
     const videos = useSelector((state: any) => state.video);
     const hoveredItem = useSelector((state: any) => state.hoveredItem);
     const dispatch: any = useDispatch();
@@ -42,7 +40,7 @@ export const LargeVideoTile = ({ isTopic }: Props) => {
 
     const onLargeImageLeave = () => {
         dispatch({
-            type: "SET_FAVORITE_ITEM",
+            type: "SET_HOVERED_ITEM",
             payload: {
                 isHovered: false,
             },
@@ -67,7 +65,7 @@ export const LargeVideoTile = ({ isTopic }: Props) => {
         hoveredItem.row.forEach((item: any, index: any) => {
             if (item.videoId === hoveredItem.item.videoId) {
                 dispatch({
-                    type: "SET_FAVORITE_ITEM",
+                    type: "SET_HOVERED_ITEM",
                     payload: {
                         videoPrev: hoveredItem.row[index - 1],
                         videoNext: hoveredItem.row[index + 1],
@@ -77,7 +75,7 @@ export const LargeVideoTile = ({ isTopic }: Props) => {
         });
 
         dispatch({
-            type: "SET_FAVORITE_ITEM",
+            type: "SET_HOVERED_ITEM",
             payload: { isHovered: false, isVideoOpen: true },
         });
     };
@@ -94,7 +92,7 @@ export const LargeVideoTile = ({ isTopic }: Props) => {
                     width: hoveredItem.width + "px",
                 }}
                 className={"playlist-video--large" + getVideoLargeClassNames()}
-                onMouseLeave={onLargeImageLeave}
+                onMouseOut={onLargeImageLeave}
             >
                 <img
                     key={hoveredItem.item.id}
@@ -133,8 +131,4 @@ export const LargeVideoTile = ({ isTopic }: Props) => {
             </a>
         </>
     );
-};
-
-LargeVideoTile.defaultProps = {
-    isTopic: false,
 };

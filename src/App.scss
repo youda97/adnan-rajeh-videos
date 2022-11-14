@@ -6,3 +6,28 @@
 @import "./components/Error.scss";
 @import "./components/LargeVideoTile.scss";
 @import "./components/VideoModal.scss";
+@import "./components/livestream.scss";
+@import "./components/Settings.scss";
+@import "./components/Help.scss";
+
+.footer {
+    background-color: var(--detail-tile);
+    padding: 5em 0 3em;
+
+    .footer-container {
+        margin: 0 4%;
+        height: 130px;
+
+        .social-links {
+            display: flex;
+            float: right;
+
+            a {
+                margin-left: 35px;
+                color: var(--color);
+                cursor: pointer;
+                text-decoration: none;
+            }
+        }
+    }
+}

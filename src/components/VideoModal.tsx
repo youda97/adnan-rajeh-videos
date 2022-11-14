@@ -3,13 +3,12 @@ import { Eye, PlayCircle, ThumbsUp, X } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchVideo } from "../redux/features/videoSlice";
 
-interface Props {
-    isTopic: boolean;
-}
+interface Props {}
 
-export const VideoModal = ({ isTopic }: Props) => {
+export const VideoModal = ({}: Props) => {
     const videos = useSelector((state: any) => state.video);
     const hoveredItem = useSelector((state: any) => state.hoveredItem);
+    const settings = useSelector((state: any) => state.settings);
     const dispatch: any = useDispatch();
 
     const videoModal = useRef<any>(null);
@@ -26,7 +25,7 @@ export const VideoModal = ({ isTopic }: Props) => {
 
     const modalClose = () => {
         dispatch({
-            type: "SET_FAVORITE_ITEM",
+            type: "SET_HOVERED_ITEM",
             payload: { isVideoOpen: false },
         });
     };
@@ -51,11 +50,22 @@ export const VideoModal = ({ isTopic }: Props) => {
         }
     };
 
+    const formatDate = (date: any) => {
+        const newDate = new Date(date);
+        const myDate =
+            newDate.getDate() +
+            "/" +
+            (newDate.getMonth() + 1) +
+            "/" +
+            newDate.getFullYear();
+        return String(myDate);
+    };
+
     const setPrevNextVideo = (id: any) => {
         hoveredItem.row.forEach((item: any, index: any) => {
             if (item.videoId === id) {
                 dispatch({
-                    type: "SET_FAVORITE_ITEM",
+                    type: "SET_HOVERED_ITEM",
                     payload: {
                         videoPrev: hoveredItem.row[index - 1],
                         videoNext: hoveredItem.row[index + 1],
@@ -86,7 +96,11 @@ export const VideoModal = ({ isTopic }: Props) => {
                                 src={
                                     "https://www.youtube.com/embed/" +
                                     videos.items[0].id +
-                                    "?autoplay=1&mute=0&rel=0&modestbranding=1"
+                                    `?autoplay=${
+                                        settings.autoplay ? "1" : "0"
+                                    }&mute=${
+                                        settings.mute ? "1" : "0"
+                                    }&rel=0&modestbranding=1`
                                 }
                                 title={videos.items[0].title}
                                 frameBorder="0"
@@ -115,6 +129,11 @@ export const VideoModal = ({ isTopic }: Props) => {
                                         <div className="duration">
                                             {formatDuration(
                                                 videos.items[0].duration
+                                            )}
+                                        </div>
+                                        <div className="published">
+                                            {formatDate(
+                                                videos.items[0].publishedAt
                                             )}
                                         </div>
                                     </div>
@@ -240,8 +259,4 @@ export const VideoModal = ({ isTopic }: Props) => {
             <div className="modal-overlay" tabIndex={-1}></div>
         </div>
     );
-};
-
-VideoModal.defaultProps = {
-    isTopic: false,
 };

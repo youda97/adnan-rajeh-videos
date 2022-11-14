@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const YOUTUBE_API = "https://www.googleapis.com/youtube/v3/playlistItems";
+const YOUTUBE_API = "https://www.googleapis.com/youtube/v3/search";
 const RESULTS = 50;
 
 const initialState = {
@@ -10,35 +10,29 @@ const initialState = {
     error: {},
 };
 
-export const fetchPlaylistItems = createAsyncThunk(
-    "playlistItem/fetchPlaylistItems",
-    (playlistId: any) => {
+export const fetchSearch = createAsyncThunk(
+    "search/fetchVideos",
+    (query: any) => {
         return axios
             .get(
-                `${YOUTUBE_API}?key=${process.env.REACT_APP_YOUTUBE_API_KEY}&playlistId=${playlistId}&part=id,snippet,status&order=date&maxResults=${RESULTS}`
+                `${YOUTUBE_API}?key=${process.env.REACT_APP_YOUTUBE_API_KEY}&channelId=UCV4_IPy-P9Gbdvxn-FygEOg&part=snippet&order=date&maxResults=${RESULTS}&q=${query}`
             )
             .then((response) => {
-                let data: any = [];
+                const data: any = [];
                 response.data.items.forEach((item: any) => {
-                    const id = item.id;
-                    const playlistId = item.snippet.playlistId;
+                    const videoId = item.id.videoId;
                     const title = item.snippet.title;
                     const description = item.snippet.description;
                     const publishedAt = item.snippet.publishedAt;
                     const thumbnails = item.snippet.thumbnails;
-                    const videoId = item.snippet.resourceId.videoId;
-                    const status = item.status.privacyStatus;
 
-                    if (status === "public" && videoId) {
+                    if (videoId) {
                         data.push({
-                            id,
-                            playlistId,
+                            videoId,
                             title,
                             description,
                             publishedAt,
                             thumbnails,
-                            videoId,
-                            status,
                         });
                     }
                 });
@@ -47,21 +41,21 @@ export const fetchPlaylistItems = createAsyncThunk(
     }
 );
 
-const playlistItemSlice = createSlice({
-    name: "playlistItem",
+const searchSlice = createSlice({
+    name: "search",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(fetchPlaylistItems.pending, (state) => {
+            .addCase(fetchSearch.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(fetchPlaylistItems.fulfilled, (state, action) => {
+            .addCase(fetchSearch.fulfilled, (state, action) => {
                 state.loading = false;
                 state.items = action.payload;
                 state.error = "";
             })
-            .addCase(fetchPlaylistItems.rejected, (state, action) => {
+            .addCase(fetchSearch.rejected, (state, action) => {
                 state.loading = false;
                 state.items = [];
                 state.error = action.error;
@@ -69,4 +63,4 @@ const playlistItemSlice = createSlice({
     },
 });
 
-export default playlistItemSlice.reducer;
+export default searchSlice.reducer;

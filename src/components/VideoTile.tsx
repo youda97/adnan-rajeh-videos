@@ -17,7 +17,7 @@ export const VideoTile = ({ row, rowIndex, isTopic, allRows }: Props) => {
 
     useEffect(() => {
         dispatch({
-            type: "SET_FAVORITE_ITEM",
+            type: "SET_HOVERED_ITEM",
             payload: { isHovered: false },
         });
     }, [hoveredItem.isVideoOpen]);
@@ -27,7 +27,7 @@ export const VideoTile = ({ row, rowIndex, isTopic, allRows }: Props) => {
             onImageHover(event, item, i, j);
         }
         dispatch({
-            type: "SET_FAVORITE_ITEM",
+            type: "SET_HOVERED_ITEM",
             payload: { isHovered: false, isVideoOpen: true },
         });
     };
@@ -43,7 +43,7 @@ export const VideoTile = ({ row, rowIndex, isTopic, allRows }: Props) => {
         updatedRow.forEach((item: any, index: any) => {
             if (item.videoId === id) {
                 dispatch({
-                    type: "SET_FAVORITE_ITEM",
+                    type: "SET_HOVERED_ITEM",
                     payload: {
                         videoPrev: updatedRow[index - 1],
                         videoNext: updatedRow[index + 1],
@@ -53,24 +53,42 @@ export const VideoTile = ({ row, rowIndex, isTopic, allRows }: Props) => {
         });
     };
 
-    const setHoveredItem = (payload) =>
+    // const setHoveredItem = (payload) =>
+    //     new Promise<void>((resolve, reject) => {
+    //         dispatch({
+    //             type: "SET_HOVERED_ITEM",
+    //             payload: payload,
+    //         });
+    //         resolve();
+    //     });
+
+    const setVideo = (item) =>
         new Promise<void>((resolve, reject) => {
-            dispatch({
-                type: "SET_FAVORITE_ITEM",
-                payload: payload,
-            });
+            dispatch(fetchVideo(item.videoId));
+            setPrevNextVideo(item.videoId);
             resolve();
         });
 
     const onImageHover = (event: any, item: any, i: any, j: any) => {
         const width = event.target.closest("a").offsetWidth;
-        const height = event.target.closest("a").parentElement.offsetHeight;
+
+        if (hoveredItem.isPagination) {
+            dispatch({
+                type: "SET_HOVERED_ITEM",
+                payload: { isPagination: false },
+            });
+            return;
+        }
 
         if (i === -1 && j === -1) {
             dispatch(fetchVideo(item.videoId));
             setPrevNextVideo(item.videoId);
         } else {
             delay.current = setTimeout(() => {
+                while (j + 1 > hoveredItem.itemsInRow) {
+                    j = j - hoveredItem.itemsInRow;
+                }
+
                 const payload =
                     item.videoId === hoveredItem.item.videoId
                         ? {
@@ -82,10 +100,17 @@ export const VideoTile = ({ row, rowIndex, isTopic, allRows }: Props) => {
                               isHovered: true,
                           }
                         : { row: isTopic ? allRows : row, item, width, i, j };
-                setHoveredItem(payload).then(() => {
-                    dispatch(fetchVideo(item.videoId));
-                    setPrevNextVideo(item.videoId);
+
+                setVideo(item).then(() => {
+                    dispatch({
+                        type: "SET_HOVERED_ITEM",
+                        payload: payload,
+                    });
                 });
+                // setHoveredItem(payload).then(() => {
+                //     dispatch(fetchVideo(item.videoId));
+                //     setPrevNextVideo(item.videoId);
+                // });
             }, 400);
         }
     };
@@ -103,10 +128,10 @@ export const VideoTile = ({ row, rowIndex, isTopic, allRows }: Props) => {
                                 onClick={(event) =>
                                     onVideoClick(event, item, -1, -1)
                                 }
-                                onMouseEnter={(event) => {
+                                onMouseOver={(event) => {
                                     onImageHover(event, item, rowIndex, j);
                                 }}
-                                onMouseLeave={() => clearTimeout(delay.current)}
+                                onMouseOut={() => clearTimeout(delay.current)}
                             >
                                 <img
                                     key={item.id}

@@ -1,17 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPlaylistItems } from "../redux/features/playlistItemSlice";
-import { useLocation } from "react-router-dom";
-import { VideoTile } from "./VideoTile";
 import { LargeVideoTile } from "./LargeVideoTile";
 import { VideoModal } from "./VideoModal";
+import { VideoTile } from "./VideoTile";
 
-interface Props {}
+interface Props {
+    state: any;
+}
 
-export const Topic = ({}: Props) => {
+export const Topic = ({ state }: Props) => {
     const location = useLocation();
     const playlists = useSelector((state: any) => state.playlist);
-    const playlistItems = useSelector((state: any) => state.playlistItem);
     const hoveredItem = useSelector((state: any) => state.hoveredItem);
     const dispatch: any = useDispatch();
 
@@ -25,7 +26,7 @@ export const Topic = ({}: Props) => {
 
     useEffect(() => {
         dispatch({
-            type: "SET_FAVORITE_ITEM",
+            type: "SET_HOVERED_ITEM",
             payload: {
                 isHovered: false,
                 item: { videoId: 0 },
@@ -55,7 +56,7 @@ export const Topic = ({}: Props) => {
     }, [windowWidth]);
 
     useEffect(() => {
-        const items = playlistItems.items;
+        const items = state.items;
         if (items) {
             const result = items.reduce(
                 (resultArray: any, item: any, index: any) => {
@@ -71,7 +72,7 @@ export const Topic = ({}: Props) => {
             );
             setUpdatedItems(result);
         }
-    }, [itemsPerRow, playlistItems]);
+    }, [itemsPerRow, state]);
 
     useEffect(() => {
         if (playlistRef.current) {
@@ -93,7 +94,7 @@ export const Topic = ({}: Props) => {
                         hoveredItem.columnIndex * videoTile.offsetWidth;
 
                     dispatch({
-                        type: "SET_FAVORITE_ITEM",
+                        type: "SET_HOVERED_ITEM",
                         payload: {
                             positionLeft,
                             positionTop,
@@ -137,15 +138,17 @@ export const Topic = ({}: Props) => {
 
     return (
         <div className="container">
-            {playlistItems.loading && <div>Loading...</div>}
-            {!playlistItems.loading && playlistItems.error ? (
-                <div>Error: {playlistItems.error.message}</div>
+            {state.loading && <div className="message">Loading...</div>}
+            {!state.loading && state.error ? (
+                <div className="message">Error: {state.error.message}</div>
             ) : null}
 
-            {!playlistItems.loading && playlistItems.items.length && (
+            {!state.loading && state.items.length ? (
                 <>
                     <h4 className="playlist-videos__title">
-                        {getPlaylistTitle()}
+                        {state.items[0].playlistId
+                            ? getPlaylistTitle()
+                            : "Search"}
                     </h4>
                     <div className="playlist-videos" ref={playlistRef}>
                         {updatedItems.length &&
@@ -161,11 +164,13 @@ export const Topic = ({}: Props) => {
                                 </div>
                             ))}
 
-                        <LargeVideoTile isTopic={true} />
+                        <LargeVideoTile />
 
-                        <VideoModal isTopic={true} />
+                        <VideoModal />
                     </div>
                 </>
+            ) : (
+                <div className="message">No results</div>
             )}
         </div>
     );

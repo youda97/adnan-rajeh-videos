@@ -21,7 +21,7 @@
             min-width: 6em;
             cursor: pointer;
             text-decoration: none;
-            color: #ffff;
+            color: var(--color);
 
             @media screen and (max-width: 800px) {
                 font-size: 12px !important;
@@ -37,7 +37,7 @@
                 align-items: center;
 
                 .see-all-link {
-                    color: #54b9c5;
+                    color: var(--link);
                     display: inline-block;
                     font-size: 0.9vw;
                     font-weight: 500;
@@ -57,7 +57,7 @@
                 }
 
                 .chevron-right {
-                    color: #54b9c5;
+                    color: var(--link);
                     opacity: 0;
                     width: 0.9vw;
                     height: 0.9vw;
@@ -104,6 +104,7 @@
             top: 0;
             width: 4%;
             background: hsla(0, 0%, 8%, 0.5);
+            color: var(--arrow-color);
             cursor: pointer;
 
             &.right {
@@ -197,14 +198,14 @@
             top: -15px;
 
             li {
-                background-color: #4d4d4d;
+                background-color: var(--pagination-item);
                 display: inline-block;
                 height: 2px;
                 margin-left: 2px;
                 width: 12px;
 
                 &.active {
-                    background-color: #aaa;
+                    background-color: var(--pagination-item-active);
                 }
             }
         }
