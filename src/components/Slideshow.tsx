@@ -51,7 +51,7 @@ export const Slideshow = ({ playlistItems }: Props) => {
             setTotalPages(filteredVideos.length / itemsInRow);
 
             dispatch({
-                type: "SET_FAVORITE_ITEM",
+                type: "SET_HOVERED_ITEM",
                 payload: { itemsInRow },
             });
         }
@@ -59,6 +59,11 @@ export const Slideshow = ({ playlistItems }: Props) => {
 
     const updateCurrentIndex = (newInex: any) => {
         setCurrentIndex(newInex);
+
+        dispatch({
+            type: "SET_HOVERED_ITEM",
+            payload: { isPagination: true },
+        });
     };
 
     const renderListIndicators = () => {
